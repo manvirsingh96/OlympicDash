@@ -1,0 +1,11 @@
+name: 'olympicdash'
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - ipykernel
+  - altair
+  - dash=2.8.*
+  - dash-bootstrap-components
+
+  
