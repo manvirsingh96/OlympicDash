@@ -50,16 +50,11 @@ To install `OlympicDash` locally, follow the steps below:
 
 ## Contributing
 
-Interested in contributing? We are glad you are interested, please check out the [contributing guidelines](https://github.com/UBC-MDS/OlymPulse/blob/main/CONTRIBUTING.md). Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
+Interested in contributing? We are glad you are interested, please check out the [contributing guidelines](https://github.com/manvirsingh96/OlympicDash/blob/main/CONTRIBUTING.md). Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
 
 ## License
 
-`OlymPulse` was created by Raul Aguilar Lopez, Manvir Kohli and Crystal Geng. The materials of this project are licensed under the MIT License. If re-using/re-mixing please provide attribution and link to this webpage.
+`OlympicDash` was created by Manvir Kohli. The materials of this project are licensed under the MIT License. If re-using/re-mixing please provide attribution and link to this webpage.
 
 ## Contributors
-
-Crystal Geng, Manvir Kohli, Raul Aguilar
-
-<a href="https://github.com/UBC-MDS/OlymPulse/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=UBC-MDS/OlymPulse" />
-</a>
+ Manvir Kohli
