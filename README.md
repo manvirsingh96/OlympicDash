@@ -4,7 +4,7 @@
 
 - [Motivation](#motivation)
 - [Explore the app](#explore-the-app)
-- [Description](#description)
+- [Description and Usage](#description-and-usage)
 - [About the data](#about-the-data)
 - [Installation](#installation)
 - [Contributing](#contributing)
