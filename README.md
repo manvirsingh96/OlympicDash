@@ -1,4 +1,4 @@
-# OlympicDash 🥇
+# OlympicDash
 
 ## Table of contents
 
@@ -15,7 +15,7 @@ This app can be used as a supplementary app to the [OlymPulse app](https://tetra
 
 ## Explore the app
 
-**UPDATE THIS You can access the deployed app on [shinyapps.io here](https://tetrahydrofuran.shinyapps.io/olympulse/)!**
+You can access the deployed app via this [link](https://olympicdash.onrender.com)!
 
 ## Description and Usage
 
@@ -42,11 +42,11 @@ To install `OlympicDash` locally, follow the steps below:
   conda activate olympicdash
   ```
 
-3.Execute the following command below in terminal to run the app:
+4. Execute the following command below in terminal to run the app:
 
         python app.py
 
-4. Click on the link generated in terinal or copy and paste it in your browser to load the dashboard.
+5. Click on the link generated in terminal or copy and paste it in your browser to load the dashboard.
 
 ## Contributing
 
