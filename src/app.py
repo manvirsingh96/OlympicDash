@@ -3,8 +3,6 @@ from datetime import date
 import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
-import altair as alt
-alt.data_transformers.disable_max_rows()
 import plotly.express as px
 import plotly.graph_objs as go
 

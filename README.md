@@ -17,39 +17,36 @@ This app can be used as a supplementary app to the [OlymPulse app](https://tetra
 
 **UPDATE THIS You can access the deployed app on [shinyapps.io here](https://tetrahydrofuran.shinyapps.io/olympulse/)!**
 
-## Description and usage
+## Description and Usage
 
-![](img/Olympulse_demo_2.gif)
-
-The app contains two tabs:
-
-1. `Country Level Overview` includes an interactive map that allows the users to click into each country and view the country's records in both Summer and Winter Olympic Games, furthermore, showcases the most successful sport for each country in the history of the Olympic Games. In the side panel, there is a double-sided slider that allows the users to select the range of years they are interested in from 1896 to 2016. There are three menus that enable the users to select their country of interest (as an alternative way to using the interactive map), their sport of interest, and their season of interest (Summer or Winter). With the options selected, the users can view the trend (a line chart) in the total number of medals over the given period of time, the top five medal-winning years, and the medal count by type.
-
-2. `Medal Tally Breakdown` similar to the first tab, includes a double-sided slider that allows the users to select the range of years in addition to three menus that enable the users to select their country of interest, their season of interest, the medal type, sport and event. This section contains a table showing the medals by sport and a treemap showing the main sports.
+**FILL THIS AND INCLUDE IMAGE**
 
 ## About the data
 
-This was created using a historical dataset on the modern Olympic Games athletes, including both Summer and Winter games from Athens 1896 to Rio 2016. The dataset contains 271,116 registers including both medal winners and non-winners. However, we will focus on athletes who won an Olympic medal (39,783 records).
-
-The data set is public and can be found in [tidytuesday](https://github.com/rfordatascience/tidytuesday). Follow this link to access to the source dataset [olympics.csv](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-27/olympics.csv).
-
+**FILL THIS**
 ## Installation
 
-To install `OlymPulse` locally, you can do as follows:
+To install `OlympicDash` locally, follow the steps below:
 
 1. Clone this repository to your local directory.
 
-2. Install all the packages required to run this app by executing the following command in your R console:
+2. While in the root directory of the reop , create an environment (using the `od_env.yaml` file) by running the commands below in the terminal to install all the required packages
 
     ``` bash
-    install.packages(c("shiny", "ggplot2", "tidyverse", "plotly", "leaflet", "leaflet.extras", "sf", "countrycode", "RColorBrewer", "treemapify", "bslib", "shinycssloaders", "shinytest2"))
+    conda env create -f od_env.yaml
     ```
 
-3. After installing the packages, execute the following command to run the app:
+3. This will create an environment with the name 'olympicdash'. Activate the environment by running the following command in terminal:
 
-        RScript app.R
+  ```bash
+  conda activate olympicdash
+  ```
 
-4. Copy the address and paste it in your browser to load the dashboard.
+3.Execute the following command below in terminal to run the app:
+
+        python app.py
+
+4. Click on the link generated in terinal or copy and paste it in your browser to load the dashboard.
 
 ## Contributing
 
