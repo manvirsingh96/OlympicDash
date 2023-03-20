@@ -127,9 +127,12 @@ app.layout = dbc.Container(
                             options=['Age','Height','Weight'],
                             value = 'Age',
                             placeholder='Select a demographic')],width={"size": 5, "offset": 5}
-                         )],
+                         ),
+                html.Label(['Select Variable of Interest'],style={'font-weight': 'bold', "text-align": "center","font-size":16})],
+            
                 align='center'
         ),
+        
         
         html.Hr(),
         

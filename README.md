@@ -55,14 +55,16 @@ To install `OlympicDash` locally, follow the steps below:
 
 3. This will create an environment with the name 'olympicdash' install all the packages required to runthe app. Activate the environment by running the following command in terminal:
 
-  ```bash
-  conda activate olympicdash
-  ```
+   ```bash
+    conda activate olympicdash
+    ```
 
 4. Execute the following command below in terminal to run the app:
 
-        python app.py
-
+  ```bash
+      python app.py
+  ```
+  
 5. Click on the link generated in terminal or copy and paste it in your browser to load the dashboard.
 
 ## Contributing
