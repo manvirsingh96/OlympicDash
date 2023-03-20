@@ -49,22 +49,22 @@ To install `OlympicDash` locally, follow the steps below:
 
 2. While in the root directory of the repository , create an environment (using the `od_env.yaml` file) by running the commands below in the terminal. 
 
-    ``` bash
+  ``` bash
     conda env create -f od_env.yaml
-    ```
+   ```
 
 3. This will create an environment with the name 'olympicdash' install all the packages required to runthe app. Activate the environment by running the following command in terminal:
 
-   ```bash
+  ```bash
     conda activate olympicdash
-    ```
+  ```
 
 4. Execute the following command below in terminal to run the app:
 
-  ```bash
-      python app.py
-  ```
-  
+  ``` bash
+    conda env create -f od_env.yaml
+   ```
+
 5. Click on the link generated in terminal or copy and paste it in your browser to load the dashboard.
 
 ## Contributing
