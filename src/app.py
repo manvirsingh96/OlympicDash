@@ -3,16 +3,18 @@ from datetime import date
 import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
+import altair as alt
+alt.data_transformers.disable_max_rows()
 import plotly.express as px
 import plotly.graph_objs as go
 
 
 data = pd.read_csv('https://raw.githubusercontent.com/UBC-MDS/OlymPulse/main/data/clean/olympic_clean.csv')
-# data = df.drop(columns=['id','name','sex','age','height','weight'])
+data = data.drop(columns=['id','name','noc','games'])
 # data = df.dropna()
 # data['year'] =pd.to_numeric(data['year'])
 
-def df_filtering(data_original,cntry,mdl,yr):
+def df_filtering(data_original,cntry,mdl,yr,sprt):
     df_filtered = data_original.copy()
     if type(cntry)!= list:
         df_filtered = df_filtered[(df_filtered['medal'].isin(mdl)) &
@@ -24,6 +26,17 @@ def df_filtering(data_original,cntry,mdl,yr):
     
     df_filtered = df_filtered[(df_filtered['year'] >= yr[0]) &
                               (df_filtered['year'] <= yr[1])]
+  
+    if type(sprt)!= list:
+        df_filtered = df_filtered[(df_filtered['sport'].isin([sprt]))]
+    else:
+        df_filtered = df_filtered[(df_filtered['sport'].isin(sprt))]
+        
+    df_filtered = df_filtered.rename(columns = {'age':'Age',
+                                                'height':'Height',
+                                                'weight':'Weight'})
+      
+    
     return df_filtered
     
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
@@ -51,8 +64,21 @@ controls = dbc.Card(
                 html.Label(['Select Country'],style={'font-weight': 'bold', "text-align": "center"}),
                 dcc.Dropdown(id='dd_countries',
                             options=np.sort(data['team'].unique()),
+                            multi=True,
                             value = 'Canada' ,
                             placeholder='Select a country'),
+            ]
+        ),
+       html.Br(),
+       
+       html.Div(
+            [
+                html.Label(['Select Sport'],style={'font-weight': 'bold', "text-align": "center"}),
+                dcc.Dropdown(id='dd_sport',
+                            options=np.sort(data['sport'].unique()),
+                            multi=True,
+                            value = 'Ice Hockey' ,
+                            placeholder='Select a sport'),
             ]
         ),
        html.Br(),
@@ -73,9 +99,9 @@ controls = dbc.Card(
 
 app.layout = dbc.Container(
     [
-        html.H1('OlymPulse', style={'color': 'black', 'fontSize': 60,'textAlign':'center','fontFace':'bold'}),
+        html.H1('OlympicDash', style={'color': 'black', 'fontSize': 60,'textAlign':'center','fontFace':'bold'}),
         html.Br(),
-        html.H3('Stats about teams in the Olympics',style={'color': 'blue', 'fontSize': 30,'textAlign':'center'}),
+        html.H3('Olympic Medal Stats by Demographics',style={'color': 'blue', 'fontSize': 30,'textAlign':'center'}),
         html.Hr(),
         dbc.Row(
             [
@@ -84,11 +110,36 @@ app.layout = dbc.Container(
             ],
             align="center",
         ),
+        
+        html.Hr(),
+        
         dbc.Row(
             [
-                dbc.Col(dcc.Graph(id = 'age_hist'),width=4),
-                dbc.Col(dcc.Graph(id='height_hist'), width=4),
-                dbc.Col(dcc.Graph(id='weight_hist'), width=4)
+                
+                dbc.Col(dcc.Graph(id = 'hist'),width={"size": 9,"offset":3} )
+                
+            ],
+            align="center",
+        ),
+        
+                      
+        dbc.Row(
+            [
+                dbc.Col([dcc.Dropdown(id='dd_xcol',
+                            options=['Age','Height','Weight'],
+                            value = 'Age',
+                            placeholder='Select a demographic')],width={"size": 5, "offset": 5}
+                         )],
+                align='center'
+        ),
+        
+        html.Hr(),
+        
+        dbc.Row(
+            [
+                
+                dbc.Col(dcc.Graph(id = 'line'),width={"size": 9,"offset":3} )
+                
             ],
             align="center",
         ),
@@ -103,15 +154,18 @@ app.layout = dbc.Container(
         Output('barchart', 'figure'),
         Input('dd_countries', 'value'),
         Input('medals_checkbox', 'value'),
-        Input('year_slider', 'value'))
+        Input('year_slider', 'value'),
+        Input('dd_sport', 'value'))
+
     
-def update_barchart(country,medal_type,year):
+def update_barchart(country,medal_type,year,sport):
    
-    df_filtered = df_filtering(data,country,medal_type,year)
-    df_grouped = df_filtered[['team','medal','sex','event']].groupby(['team','medal','sex']).count().reset_index().rename(columns={'event':'Count',
+    df_filtered = df_filtering(data,country,medal_type,year,sport)
+    df_grouped = df_filtered[['team','medal','sex','event','sport']].groupby(['team','medal','sex','sport']).count().reset_index().rename(columns={'event':'Count',
                                                                                                                                      'team':'Country',
                                                                                                                                      'medal':'Medal',
-                                                                                                                                     'sex':'Sex'})
+                                                                                                                                     'sex':'Sex',
+                                                                                                                                     'sport':'Sport'})
     # bar_chart = alt.Chart(df_filtered).mark_bar().encode(
     #     y= alt.Y('medal',title='Medal Type'),
     #     x=alt.X ('count()',title='No. of medals'),
@@ -123,124 +177,92 @@ def update_barchart(country,medal_type,year):
                        x='Medal',
                        y='Count',
                        color= 'Sex',
-                       hover_data=['Country'],
+                       hover_data=['Country','Sport'],
                        labels={'Count':'No. of medals'},
                        category_orders={"Medal": ["Gold", "Silver", "Bronze"]},
                        barmode='group',
                        title='Medal Count by Sex',
-                       facet_col=  "Country"
+                       facet_col=  "Country",
+                       text = 'Sport'
                        )
 
-    bar_chart.update_layout(showlegend=True,title_x = 0.5,title_font_size=30,title_font_family="Arial Black")
+    bar_chart.update_layout(showlegend=True,title_x = 0.5,title_font_size=25,title_font_family="Arial Black")
 
     return bar_chart
 
 
 @app.callback(
-        Output('age_hist', 'figure'),
+        Output('hist', 'figure'),
         Input('dd_countries', 'value'),
         Input('medals_checkbox', 'value'),
-        Input('year_slider', 'value'))
+        Input('year_slider', 'value'),
+        Input('dd_sport', 'value'),
+        Input('dd_xcol', 'value'))
     
-def update_agehist(country,medal_type,year):
-    df_filtered = df_filtering(data,country,medal_type,year)
+def update_hist(country,medal_type,year,sport,xcol):
+    df_filtered = df_filtering(data,country,medal_type,year,sport)
     
-    df_grouped = df_filtered[['age','medal','event','sex']].dropna().groupby(['age','medal','sex']).count().reset_index().rename(columns={'event':'Count',
+    df_grouped = df_filtered[[xcol,'medal','event','sex','team','sport']].dropna().groupby([xcol,'medal','sex','team','sport']).count().reset_index().rename(columns={'event':'Count',
                                                                                                                                      'medal':'Medal',
-                                                                                                                                     'age':'Age',
-                                                                                                                                     'sex':'Sex'})
-    
-    # df_grouped = df_filtered[['age','medal']].dropna().groupby(['age']).count().reset_index().rename(columns={'medal':'Count','age':'Age'})
-    
-    
-    hist_age = px.histogram(data_frame = df_grouped,
-                       x='Age',
-                       y='Count',
-                      color= 'Sex',
-                        opacity=0.6,
-                    color_discrete_sequence=['green','red'], 
-                       labels={'Count':'No. of medals'},
-                       title='Age vs Count of Medals'
-                       )
-    # bar_chart.layout.update(showlegend=True,
-    #                         title={'font': {'size': 20},'textAlign':'center'}) 
-    hist_age.update_layout(showlegend=False,title_x = 0.5,title_font_size=20,title_font_family="Arial Black")
-    hist_age.update_traces(marker_line_width=1,marker_line_color="black")
-    hist_age.for_each_yaxis(lambda a: a.update(title_text=a.title.text.replace("sum of", "")))
-
-
-    return hist_age
-
-
-@app.callback(
-        Output('height_hist', 'figure'),
-        Input('dd_countries', 'value'),
-        Input('medals_checkbox', 'value'),
-        Input('year_slider', 'value'))
-    
-def update_heighthist(country,medal_type,year):
-    df_filtered = df_filtering(data,country,medal_type,year)
-    
-    df_grouped = df_filtered[['height','medal','event','sex']].dropna().groupby(['height','medal','sex']).count().reset_index().rename(columns={'event':'Count',
-                                                                                                                                     'medal':'Medal',
-                                                                                                                                     'height':'Height',
-                                                                                                                                     'sex':'Sex'})
-    
-    # df_grouped = df_filtered[['age','medal']].dropna().groupby(['age']).count().reset_index().rename(columns={'medal':'Count','age':'Age'})
+                                                                                                                                     'sex':'Sex',
+                                                                                                                                     'team':'Country',
+                                                                                                                                     'sport':'Sport'})
     
     
-    hist_height = px.histogram(data_frame = df_grouped,
-                       x='Height',
+    
+    hist = px.histogram(data_frame = df_grouped,
+                       x=xcol,
                        y='Count',
                        color= 'Sex',
-                        opacity=0.6,
-                    color_discrete_sequence=['green','red'], 
-                       labels={'Count':'No. of medals'},
-                       title='Height vs Count of Medals'
+                       opacity=0.6,
+                       color_discrete_sequence=['green','red'], 
+                        labels={'Height':'Height (cm)','Weight':'Weight (kgs)','Age':'Age (yrs)'},
+                       title=f'{xcol.capitalize()} vs Count of Medals',
+                       facet_col ='Country'
                        )
     # bar_chart.layout.update(showlegend=True,
     #                         title={'font': {'size': 20},'textAlign':'center'}) 
-    hist_height.update_layout(showlegend=False,title_x = 0.5,title_font_size=20,title_font_family="Arial Black")
-    hist_height.update_traces(marker_line_width=1,marker_line_color="black")
-    hist_height.for_each_yaxis(lambda a: a.update(title_text=a.title.text.replace("sum of", "")))
+    hist.update_layout(showlegend=True,title_x = 0.5,title_font_size=25,title_font_family="Arial Black",yaxis_title="No. of Medals")
+    hist.update_traces(marker_line_width=1,marker_line_color="black")
+    # hist.for_each_yaxis(lambda a: a.update(title_text=a.title.text.replace("sum of", "")))
 
 
-    return hist_height
+    return hist
+
 
 @app.callback(
-        Output('weight_hist', 'figure'),
+        Output('line', 'figure'),
         Input('dd_countries', 'value'),
         Input('medals_checkbox', 'value'),
-        Input('year_slider', 'value'))
+        Input('year_slider', 'value'),
+        Input('dd_sport', 'value'))
     
-def update_weighthist(country,medal_type,year):
-    df_filtered = df_filtering(data,country,medal_type,year)
+def update_line(country,medal_type,year,sport):
+    df_filtered = df_filtering(data,country,medal_type,year,sport)
     
-    df_grouped = df_filtered[['weight','medal','event','sex']].dropna().groupby(['weight','medal','sex']).count().reset_index().rename(columns={'event':'Count',
-                                                                                                                                     'medal':'Medal',
-                                                                                                                                     'weight':'Weight',
-                                                                                                                                     'sex':'Sex'})
+    df_grouped = df_filtered[['event','sex','year','team','sport']].dropna().groupby(['year','sex','team','sport']).count().reset_index().rename(columns={'event':'Count',
+                                                                                                                            'sex':'Sex',
+                                                                                                                            'year':'Year',
+                                                                                                                            'team':'Country',
+                                                                                                                            'sport':'Sport'})
     
-    # df_grouped = df_filtered[['age','medal']].dropna().groupby(['age']).count().reset_index().rename(columns={'medal':'Count','age':'Age'})
     
     
-    hist_weight = px.histogram(data_frame = df_grouped,
-                       x='Weight',
+    line = px.line(data_frame = df_grouped,
+                       x='Year',
                        y='Count',
-                        color= 'Sex',
-                        opacity=0.6,
-                    color_discrete_sequence=['green','red'], 
-                       labels={'Count':'No. of medals'},
-                       title='Weight vs Count of Medals'
+                       color= 'Sex',
+                       labels={'Height':'Height (cm)','Weight':'Weight (kgs)','Age':'Age (yrs)'},
+                       title=f'Trend in Count of Medals by Sex',
+                       facet_col ='Country'
                        )
-    # bar_chart.layout.update(showlegend=True,
-    #                         title={'font': {'size': 20},'textAlign':'center'}) 
-    hist_weight.update_layout(showlegend=True,title_x = 0.5,title_font_size=20,title_font_family="Arial Black")
-    hist_weight.update_traces(marker_line_width=1,marker_line_color="black")
-    hist_weight.for_each_yaxis(lambda a: a.update(title_text=a.title.text.replace("sum of", "")))
+    
+    line.update_layout(showlegend=True,title_x = 0.5,title_font_size=25,title_font_family="Arial Black",yaxis_title="No. of Medals")
+    line.update_traces(marker_line_width=1,marker_line_color="black")
+    #line.update_layout(xaxis=dict(tickmode='array', tickvals=df_grouped['Year'][::4]))
+    # hist.for_each_yaxis(lambda a: a.update(title_text=a.title.text.replace("sum of", "")))
 
 
-    return hist_weight
-
+    return line
 if __name__ == '__main__':
     app.run_server(debug=True)
