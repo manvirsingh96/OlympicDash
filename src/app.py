@@ -63,7 +63,7 @@ controls = dbc.Card(
                 dcc.Dropdown(id='dd_countries',
                             options=np.sort(data['team'].unique()),
                             multi=True,
-                            value = 'Canada' ,
+                            value = ['Canada','United Kingdom'] ,
                             placeholder='Select a country'),
             ]
         ),
@@ -75,7 +75,7 @@ controls = dbc.Card(
                 dcc.Dropdown(id='dd_sport',
                             options=np.sort(data['sport'].unique()),
                             multi=True,
-                            value = 'Ice Hockey' ,
+                            value = ['Ice Hockey','Athletics'] ,
                             placeholder='Select a sport'),
             ]
         ),
@@ -85,7 +85,7 @@ controls = dbc.Card(
             [
                 html.Label(['Select Medal Type'],style={'font-weight': 'bold', "text-align": "left"}),
                 dcc.Checklist(id='medals_checkbox',
-                            options=np.sort(data['medal'].unique()),
+                            options=['Gold','Silver','Bronze'],
                             value=['Gold','Silver','Bronze'],
                             labelStyle={'display': 'block','text-align':'left'}),
             ]
@@ -215,7 +215,7 @@ def update_hist(country,medal_type,year,sport,xcol):
                        opacity=0.6,
                        color_discrete_sequence=['green','red'], 
                         labels={'Height':'Height (cm)','Weight':'Weight (kgs)','Age':'Age (yrs)'},
-                       title=f'{xcol.capitalize()} vs Count of Medals',
+                       title=f'{xcol.capitalize()} vs Count of Medals by Sex',
                        facet_col ='Country'
                        )
     # bar_chart.layout.update(showlegend=True,
